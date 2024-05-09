@@ -1,0 +1,48 @@
+import speech_recognition as sr
+import pyttsx3
+import datetime
+import webbrowser
+
+# Initialize recognizer class (for recognizing the speech)
+r = sr.Recognizer()
+
+# Initialize text-to-speech engine
+engine = pyttsx3.init()
+
+def speak(text):
+    engine.say(text)
+    engine.runAndWait()
+
+def get_audio():
+    with sr.Microphone() as source:
+        print("Listening...")
+        audio = r.listen(source)
+        try:
+            print("Recognizing...")
+            query = r.recognize_google(audio, language='en-in')
+            print(f"User said: {query}\n")
+        except Exception as e:
+            print("Say that again please...")
+            return "None"
+        return query
+
+def tell_time():
+    time = datetime.datetime.now().strftime("%H:%M:%S")
+    speak(f"The current time is {time}")
+
+def search_web(query):
+    speak("Searching the web...")
+    webbrowser.open(f"https://www.google.com/search?q={query}")
+
+if __name__ == "__main__":
+    speak("Hello, I am your voice assistant. How can I help you?")
+    while True:
+        query = get_audio().lower()
+        if "time" in query:
+            tell_time()
+        elif "search" in query:
+            search_query = query.replace("search", "").strip()
+            search_web(search_query)
+        elif "exit" in query:
+            speak("Goodbye!")
+            break
